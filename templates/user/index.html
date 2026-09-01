@@ -24,51 +24,20 @@
   <button type="submit">Search</button>
 </form>
 
-{% if active_filters %}
-<section class="active-filters panel">
-  <h2>Active filters</h2>
-  <ul class="filter-list">
-    {% for active in active_filters %}
-    <li>
-      {{ active.label }}
-      <a class="remove-filter" href="{{ active.remove_url }}">remove</a>
-    </li>
-    {% endfor %}
-  </ul>
-  <a class="button-secondary clear-filters" href="{{ clear_filters_url() }}">Clear all filters</a>
-</section>
-{% endif %}
-
 <div class="search-layout">
   <aside class="filters panel">
-    <h2>Price</h2>
-    <form class="range-filter" method="get" action="{{ url_for('user.index') }}">
-      <input type="hidden" name="q" value="{{ result.query }}">
-      {% if result.department_id %}
-      <input type="hidden" name="department_id" value="{{ result.department_id }}">
-      {% endif %}
-      <label>
-        Min
-        <input type="number" name="price_min" value="{{ result.price_min or '' }}" step="0.01"
-               {% if result.price_facet.min_value is not none %}placeholder="{{ result.price_facet.min_value }}"{% endif %}>
-      </label>
-      <label>
-        Max
-        <input type="number" name="price_max" value="{{ result.price_max or '' }}" step="0.01"
-               {% if result.price_facet.max_value is not none %}placeholder="{{ result.price_facet.max_value }}"{% endif %}>
-      </label>
-      <button type="submit" class="button-secondary">Apply</button>
-    </form>
-
     <h2>Departments</h2>
     {% if result.active_departments %}
     <ul class="filter-list">
       {% for department in result.active_departments %}
-      <li>
+      <li class="filter-row">
         <a href="{{ search_url(q=result.query, department_id=department.id) }}"
            {% if result.department_id == department.id %}class="active"{% endif %}>
           {{ department.name }}
         </a>
+        {% if result.department_id == department.id %}
+        <a class="filter-clear" href="{{ remove_department_url() }}" title="Remove">×</a>
+        {% endif %}
       </li>
       {% endfor %}
     </ul>
@@ -76,16 +45,48 @@
     <p class="hint">No matching departments.</p>
     {% endif %}
 
+    <h2>Price</h2>
+    <form class="range-filter" method="get" action="{{ url_for('user.index') }}">
+      <input type="hidden" name="q" value="{{ result.query }}">
+      {% if result.department_id %}
+      <input type="hidden" name="department_id" value="{{ result.department_id }}">
+      {% endif %}
+      <div class="filter-row">
+        <label>
+          Min
+          <input type="number" name="price_min" value="{{ result.price_min or '' }}" step="0.01"
+                 {% if result.price_facet.min_value is not none %}placeholder="{{ result.price_facet.min_value }}"{% endif %}>
+        </label>
+        {% if result.price_min %}
+        <a class="filter-clear" href="{{ remove_filter_url('price_min') }}" title="Remove">×</a>
+        {% endif %}
+      </div>
+      <div class="filter-row">
+        <label>
+          Max
+          <input type="number" name="price_max" value="{{ result.price_max or '' }}" step="0.01"
+                 {% if result.price_facet.max_value is not none %}placeholder="{{ result.price_facet.max_value }}"{% endif %}>
+        </label>
+        {% if result.price_max %}
+        <a class="filter-clear" href="{{ remove_filter_url('price_max') }}" title="Remove">×</a>
+        {% endif %}
+      </div>
+      <button type="submit" class="button-secondary">Apply</button>
+    </form>
+
     {% if result.department_id %}
     {% for facet in result.select_facets %}
     <h3>{{ facet.attribute_name }}</h3>
     <ul class="filter-list">
       {% for option in facet.options %}
-      <li>
+      <li class="filter-row">
         <a href="{{ select_filter_url(facet.attribute_id, option.option_id) }}"
            {% if request.args.get('filter_' ~ facet.attribute_id) == option.option_id %}class="active"{% endif %}>
           {{ option.label }} ({{ option.count }})
         </a>
+        {% if request.args.get('filter_' ~ facet.attribute_id) == option.option_id %}
+        <a class="filter-clear" href="{{ remove_filter_url('filter_' ~ facet.attribute_id) }}" title="Remove">×</a>
+        {% endif %}
       </li>
       {% endfor %}
     </ul>
@@ -100,12 +101,15 @@
       {% if result.price_max %}<input type="hidden" name="price_max" value="{{ result.price_max }}">{% endif %}
       <ul class="checkbox-list">
         {% for option in facet.options %}
-        <li>
+        <li class="filter-row">
           <label>
             <input type="checkbox" name="filter_{{ facet.attribute_id }}" value="{{ option.value }}"
               {% if option.value in request.args.getlist('filter_' ~ facet.attribute_id) %}checked{% endif %}>
             {{ option.value }} ({{ option.count }})
           </label>
+          {% if option.value in request.args.getlist('filter_' ~ facet.attribute_id) %}
+          <a class="filter-clear" href="{{ remove_filter_url('filter_' ~ facet.attribute_id, option.value) }}" title="Remove">×</a>
+          {% endif %}
         </li>
         {% endfor %}
       </ul>
@@ -120,29 +124,34 @@
       <input type="hidden" name="department_id" value="{{ result.department_id }}">
       {% if result.price_min %}<input type="hidden" name="price_min" value="{{ result.price_min }}">{% endif %}
       {% if result.price_max %}<input type="hidden" name="price_max" value="{{ result.price_max }}">{% endif %}
-      <label>
-        Min
-        <input type="number" name="filter_{{ facet.attribute_id }}_min"
-               value="{{ request.args.get('filter_' ~ facet.attribute_id ~ '_min', '') }}"
-               step="any"
-               {% if facet.min_value is not none %}placeholder="{{ facet.min_value }}"{% endif %}>
-      </label>
-      <label>
-        Max
-        <input type="number" name="filter_{{ facet.attribute_id }}_max"
-               value="{{ request.args.get('filter_' ~ facet.attribute_id ~ '_max', '') }}"
-               step="any"
-               {% if facet.max_value is not none %}placeholder="{{ facet.max_value }}"{% endif %}>
-      </label>
+      <div class="filter-row">
+        <label>
+          Min
+          <input type="number" name="filter_{{ facet.attribute_id }}_min"
+                 value="{{ request.args.get('filter_' ~ facet.attribute_id ~ '_min', '') }}"
+                 step="any"
+                 {% if facet.min_value is not none %}placeholder="{{ facet.min_value }}"{% endif %}>
+        </label>
+        {% if request.args.get('filter_' ~ facet.attribute_id ~ '_min') %}
+        <a class="filter-clear" href="{{ remove_filter_url('filter_' ~ facet.attribute_id ~ '_min') }}" title="Remove">×</a>
+        {% endif %}
+      </div>
+      <div class="filter-row">
+        <label>
+          Max
+          <input type="number" name="filter_{{ facet.attribute_id }}_max"
+                 value="{{ request.args.get('filter_' ~ facet.attribute_id ~ '_max', '') }}"
+                 step="any"
+                 {% if facet.max_value is not none %}placeholder="{{ facet.max_value }}"{% endif %}>
+        </label>
+        {% if request.args.get('filter_' ~ facet.attribute_id ~ '_max') %}
+        <a class="filter-clear" href="{{ remove_filter_url('filter_' ~ facet.attribute_id ~ '_max') }}" title="Remove">×</a>
+        {% endif %}
+      </div>
       <button type="submit" class="button-secondary">Apply</button>
     </form>
     {% endfor %}
     {% endif %}
-
-    <label class="hide-text-toggle">
-      <input type="checkbox" id="hide-text-attrs">
-      Hide text details
-    </label>
   </aside>
 
   <section class="results">
@@ -160,7 +169,7 @@
         {% if item.item_attributes %}
         <ul class="item-attrs">
           {% for row in item.item_attributes %}
-          <li class="{% if row.department_attributes and row.department_attributes.attribute_type == 'text' %}item-attr-text{% endif %}">
+          <li>
             {% if row.department_attributes %}
               {{ row.department_attributes.name }}:
             {% endif %}
@@ -183,6 +192,4 @@
     {% endif %}
   </section>
 </div>
-
-<script src="{{ url_for('static', filename='user.js') }}"></script>
 {% endblock %}

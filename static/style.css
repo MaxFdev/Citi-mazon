@@ -99,21 +99,29 @@ a {
   font-weight: bold;
 }
 
-.active-filters h2 {
-  margin-top: 0;
-  font-size: 1rem;
+.filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.remove-filter {
-  margin-left: 0.5rem;
-  font-size: 0.85rem;
+.filter-row label {
+  flex: 1;
+  margin-bottom: 0;
 }
 
-.clear-filters {
-  display: inline-block;
-  margin-top: 0.5rem;
-  padding: 0.4rem 0.75rem;
+.filter-clear {
+  flex-shrink: 0;
+  color: #666;
+  font-size: 1.25rem;
+  line-height: 1;
   text-decoration: none;
+  padding: 0.15rem 0.35rem;
+}
+
+.filter-clear:hover {
+  color: var(--error);
 }
 
 .checkbox-list {
@@ -133,23 +141,6 @@ a {
 .checkbox-list input[type="checkbox"] {
   width: auto;
   margin: 0;
-}
-
-.hide-text-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  font-size: 0.9rem;
-}
-
-.hide-text-toggle input[type="checkbox"] {
-  width: auto;
-  margin: 0;
-}
-
-body.hide-text-attrs .item-attr-text {
-  display: none;
 }
 
 .range-filter label {

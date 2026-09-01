@@ -119,7 +119,7 @@ def test_user_passes_department_and_filters(mock_search, mock_list_departments, 
     assert b"Dell (2)" in response.data
     assert b"Room" in response.data
     assert b"Weight" in response.data
-    assert b"Clear all filters" in response.data
+    assert b"filter-clear" in response.data
     mock_search.assert_called_once_with(
         query="laptop",
         department_id="dept-2",
@@ -162,8 +162,6 @@ def test_user_shows_item_attributes(mock_search, mock_list_departments, client):
     assert response.status_code == 200
     assert b"Brand:" in response.data
     assert b"Dell" in response.data
-    assert b"Hide text details" in response.data
-    assert b"item-attr-text" in response.data
 
 
 @patch("blueprints.user.list_departments")

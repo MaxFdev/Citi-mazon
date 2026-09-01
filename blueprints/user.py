@@ -58,70 +58,16 @@ def _remove_filter_url(param: str, value: str | None = None) -> str:
     return _url_from_pairs(_args_as_pairs(exclude=[(param, value)]))
 
 
-def _clear_filters_url() -> str:
+
+def _remove_department_url() -> str:
     keep: list[tuple[str, str]] = []
     if request.args.get("q"):
         keep.append(("q", request.args.get("q")))
-    if request.args.get("department_id"):
-        keep.append(("department_id", request.args.get("department_id")))
+    for key in ("price_min", "price_max"):
+        value = request.args.get(key)
+        if value:
+            keep.append((key, value))
     return _url_from_pairs(keep)
-
-
-def _active_filters(result) -> list[dict]:
-    active: list[dict] = []
-
-    if result.price_min:
-        active.append({
-            "label": f"Price min: {result.price_min}",
-            "remove_url": _remove_filter_url("price_min"),
-        })
-    if result.price_max:
-        active.append({
-            "label": f"Price max: {result.price_max}",
-            "remove_url": _remove_filter_url("price_max"),
-        })
-
-    for facet in result.select_facets:
-        param = f"filter_{facet.attribute_id}"
-        selected = request.args.get(param)
-        if not selected:
-            continue
-        label = selected
-        for option in facet.options:
-            if option["option_id"] == selected:
-                label = option["label"]
-                break
-        active.append({
-            "label": f"{facet.attribute_name}: {label}",
-            "remove_url": _remove_filter_url(param),
-        })
-
-    for facet in result.text_facets:
-        param = f"filter_{facet.attribute_id}"
-        selected_values = request.args.getlist(param)
-        for value in selected_values:
-            active.append({
-                "label": f"{facet.attribute_name}: {value}",
-                "remove_url": _remove_filter_url(param, value),
-            })
-
-    for facet in result.number_facets:
-        min_param = f"filter_{facet.attribute_id}_min"
-        max_param = f"filter_{facet.attribute_id}_max"
-        min_value = request.args.get(min_param)
-        max_value = request.args.get(max_param)
-        if min_value:
-            active.append({
-                "label": f"{facet.attribute_name} min: {min_value}",
-                "remove_url": _remove_filter_url(min_param),
-            })
-        if max_value:
-            active.append({
-                "label": f"{facet.attribute_name} max: {max_value}",
-                "remove_url": _remove_filter_url(max_param),
-            })
-
-    return active
 
 
 @user_bp.context_processor
@@ -129,7 +75,8 @@ def user_template_helpers():
     return {
         "search_url": _search_url,
         "select_filter_url": _select_filter_url,
-        "clear_filters_url": _clear_filters_url,
+        "remove_filter_url": _remove_filter_url,
+        "remove_department_url": _remove_department_url,
     }
 
 
@@ -153,11 +100,8 @@ def index():
         if auto_department_id:
             return redirect(_search_url(department_id=auto_department_id))
 
-    active_filters = _active_filters(result)
-
     return render_template(
         "user/index.html",
         result=result,
         all_departments=list_departments(),
-        active_filters=active_filters,
     )
