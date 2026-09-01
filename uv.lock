@@ -139,7 +139,6 @@ source = { virtual = "." }
 dependencies = [
     { name = "flask" },
     { name = "gunicorn" },
-    { name = "httpx" },
     { name = "python-dotenv" },
     { name = "supabase" },
 ]
@@ -153,7 +152,6 @@ dev = [
 requires-dist = [
     { name = "flask" },
     { name = "gunicorn" },
-    { name = "httpx" },
     { name = "python-dotenv" },
     { name = "supabase", specifier = ">=2.31.0" },
 ]

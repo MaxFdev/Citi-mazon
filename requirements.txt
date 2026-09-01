@@ -34,7 +34,6 @@ httpcore==1.0.9
     # via httpx
 httpx==0.28.1
     # via
-    #   citi-mazon
     #   postgrest
     #   storage3
     #   supabase
