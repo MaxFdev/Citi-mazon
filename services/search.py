@@ -38,6 +38,8 @@ def search(
     filters: dict | None = None,
 ) -> SearchResult:
     filters = filters or {}
+    if not department_id:
+        filters = {}
     q = query.strip()
 
     departments = _list_departments()
@@ -58,10 +60,8 @@ def search(
         if not active:
             active = [dept for dept in departments if dept["id"] == department_id]
 
-    # only filter by attributes when a department is selected
+    # attribute filters only when a department is selected
     item_attrs_by_item = _load_item_attributes([item["id"] for item in items])
-
-    # filter by attributes for selected department
     if department_id:
         attributes = _attributes_for_departments({department_id})
         items = _apply_filters(items, item_attrs_by_item, attributes, filters)
