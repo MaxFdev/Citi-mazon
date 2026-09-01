@@ -5,9 +5,9 @@ from postgrest.exceptions import APIError
 
 
 def test_index(client):
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.get_json() == {"message": "Hello from Citi-mazon"}
+    response = client.get("/", follow_redirects=False)
+    assert response.status_code == 302
+    assert response.location.endswith("/user/")
 
 
 def test_health(client):
