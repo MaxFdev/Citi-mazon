@@ -1,15 +1,11 @@
 from unittest.mock import patch
 
-from services.search import SearchResult
-
-from services.errors import ValidationError
+from services.search import PriceFacet, SearchResult
 
 
 @patch("blueprints.user.list_departments")
 @patch("blueprints.user.search")
 def test_user_route(mock_search, mock_list_departments, client):
-    from services.search import SearchResult
-
     mock_list_departments.return_value = []
     mock_search.return_value = SearchResult(
         query="",
@@ -17,7 +13,9 @@ def test_user_route(mock_search, mock_list_departments, client):
         active_departments=[],
         items=[],
         select_facets=[],
+        text_facets=[],
         number_facets=[],
+        price_facet=PriceFacet(),
     )
 
     response = client.get("/user/")
