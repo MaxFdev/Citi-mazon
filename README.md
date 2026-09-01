@@ -6,7 +6,7 @@ A repo to demonstrate an implementation of Amazon's department dynamic filter sy
 
 ```bash
 uv sync --group dev
-cp .env.example .env   # SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
+cp .env.example .env   # SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY, SECRET_KEY
 npm install
 ```
 
@@ -15,6 +15,8 @@ npm install
 ```bash
 uv run python app.py
 ```
+
+Portals: `/user` (search), `/vendor` (list items), `/site` (manage departments).
 
 ## Test
 
@@ -25,8 +27,6 @@ uv run pytest -v
 ## Supabase schema
 
 ```bash
-npx supabase init
-npx supabase login
 npx supabase link --project-ref <project-ref>
 npx supabase db push
 ```
@@ -43,4 +43,4 @@ uv run python scripts/seed_data.py
 
 ## Deploy
 
-Render: build `pip install -r requirements.txt`, start `gunicorn app:app --bind 0.0.0.0:$PORT`. Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Auto-deploy after CI passes on `main`.
+Render: build `pip install -r requirements.txt`, start `gunicorn app:app --bind 0.0.0.0:$PORT`. Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `SECRET_KEY`. Auto-deploy after CI passes on `main`.
