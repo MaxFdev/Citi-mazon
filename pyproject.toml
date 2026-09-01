@@ -1,7 +1,7 @@
 [project]
 name = "Citi-mazon"
 version = "0.1.0"
-description = "Add your description here"
+description = "A repo to demonstrate an implementation of Amazon's department dynamic filter system based on user search"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
