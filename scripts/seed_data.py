@@ -19,7 +19,7 @@ load_dotenv(ROOT / ".env")
 from services.departments import create_department, list_departments
 from services.items import create_item
 
-DEPARTMENT_NAMES = frozenset({"Citi Merch", "Citi Computers"})
+DEPARTMENT_NAMES = frozenset({"Citi Merch", "Citi Computers", "Citi Home"})
 
 CITI_MERCH = {
     "name": "Citi Merch",
@@ -136,6 +136,63 @@ CITI_COMPUTERS = {
 }
 
 
+CITI_HOME = {
+    "name": "Citi Home",
+    "description": "Desk and home office essentials with Citi branding.",
+    "search_terms": ["citi", "desk", "office", "home", "workspace"],
+    "attributes": [
+        {
+            "name": "Material",
+            "attribute_type": "select",
+            "options": ["Wood", "Metal", "Fabric"],
+        },
+        {
+            "name": "Room",
+            "attribute_type": "text",
+        },
+        {
+            "name": "Width",
+            "attribute_type": "number",
+        },
+    ],
+    "items": [
+        {
+            "vendor_name": "Citi Workspace Co",
+            "title": "Citi Desk Lamp",
+            "description": "Adjustable lamp for home office desks.",
+            "price": 39.99,
+            "attributes": {
+                "Material": ("select", "Metal"),
+                "Room": ("text", "Office"),
+                "Width": ("number", 8.0),
+            },
+        },
+        {
+            "vendor_name": "Citi Workspace Co",
+            "title": "Citi Desk Organizer",
+            "description": "Keeps pens and notes tidy on your desk.",
+            "price": 24.99,
+            "attributes": {
+                "Material": ("select", "Wood"),
+                "Room": ("text", "Office"),
+                "Width": ("number", 12.0),
+            },
+        },
+        {
+            "vendor_name": "Citi Workspace Co",
+            "title": "Citi Throw Pillow",
+            "description": "Accent pillow with subtle Citi branding.",
+            "price": 34.99,
+            "attributes": {
+                "Material": ("select", "Fabric"),
+                "Room": ("text", "Living room"),
+                "Width": ("number", 18.0),
+            },
+        },
+    ],
+}
+
+
 def seed_already_applied() -> bool:
     existing = {department["name"] for department in list_departments()}
     return DEPARTMENT_NAMES.issubset(existing)
@@ -206,9 +263,11 @@ def seed() -> None:
 
     merch = _seed_department(CITI_MERCH)
     computers = _seed_department(CITI_COMPUTERS)
+    home = _seed_department(CITI_HOME)
 
     print(f"Created {merch['name']} with {len(CITI_MERCH['items'])} items.")
     print(f"Created {computers['name']} with {len(CITI_COMPUTERS['items'])} items.")
+    print(f"Created {home['name']} with {len(CITI_HOME['items'])} items.")
 
 
 def main() -> None:
