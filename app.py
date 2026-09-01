@@ -1,11 +1,13 @@
-from flask import Flask, jsonify, request
-from workers import wsgi
+import os
+
 import httpx
+from dotenv import load_dotenv
+from flask import Flask, jsonify
+
+load_dotenv()
 
 app = Flask(__name__)
 
-def get_worker_env():
-    return request.environ["workers.env"]
 
 def check_supabase_connection(url: str, key: str) -> None:
     response = httpx.get(
@@ -18,22 +20,27 @@ def check_supabase_connection(url: str, key: str) -> None:
     )
     response.raise_for_status()
 
+
 @app.get("/")
 def index():
     return jsonify({"message": "Hello from Citi-mazon"})
+
 
 @app.get("/health")
 def health():
     return jsonify({"status": "ok"})
 
+
 @app.get("/health/supabase")
 def health_supabase():
-    env = get_worker_env()
-    url = env.SUPABASE_URL
-    key = env.SUPABASE_PUBLISHABLE_KEY
+    url = os.environ.get("SUPABASE_URL")
+    key = os.environ.get("SUPABASE_PUBLISHABLE_KEY")
 
     if not url or not key:
-        return jsonify({"supabase": "error", "detail": "Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY"}), 500
+        return jsonify({
+            "supabase": "error",
+            "detail": "Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY",
+        }), 500
 
     try:
         check_supabase_connection(url, key)
@@ -49,4 +56,7 @@ def health_supabase():
             "detail": str(exc),
         }), 502
 
-Default = wsgi.entrypoint(app)
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5001))
+    app.run(debug=True, host="0.0.0.0", port=port)

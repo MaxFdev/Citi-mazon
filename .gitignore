@@ -156,7 +156,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.dev.vars
 
 # Spyder project settings
 .spyderproject
@@ -217,13 +216,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
-# Node
-node_modules/
-
-# Cloudflare Wrangler
-.wrangler/
-
-# Pywrangler / Cloudflare Python Workers
-python_modules/
-.venv-workers/
