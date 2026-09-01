@@ -1,0 +1,136 @@
+:root {
+  --citi-blue: #056dae;
+  --citi-dark: #003b5c;
+  --border: #d9e2e8;
+  --error: #b00020;
+  --success: #1b6b34;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #222;
+  background: #f5f8fa;
+}
+
+a {
+  color: var(--citi-blue);
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--citi-dark);
+  color: #fff;
+}
+
+.site-header a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 1rem;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-left: 0;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+button {
+  background: var(--citi-blue);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.button-secondary {
+  background: #fff;
+  color: var(--citi-blue);
+  border: 1px solid var(--citi-blue);
+}
+
+.attribute-row {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+}
+
+.hint,
+.meta {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.department-list {
+  list-style: none;
+  padding: 0;
+}
+
+.department-list > li {
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 0;
+}
+
+.flash-messages {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem 1.5rem;
+}
+
+.flash {
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.flash-error {
+  background: #fde8eb;
+  color: var(--error);
+}
+
+.flash-success {
+  background: #e8f5ec;
+  color: var(--success);
+}

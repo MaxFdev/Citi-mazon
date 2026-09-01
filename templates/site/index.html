@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Site | Citi-mazon{% endblock %}
+
+{% block content %}
+<h1>Site admin</h1>
+<p>Create departments, search terms, and filter attributes.</p>
+
+<section class="panel">
+  <h2>New department</h2>
+  <form method="post" action="{{ url_for('site.create') }}">
+    <label>
+      Name
+      <input type="text" name="name" required>
+    </label>
+    <label>
+      Description
+      <textarea name="description" rows="3"></textarea>
+    </label>
+    <label>
+      Search terms
+      <input type="text" name="search_terms" placeholder="laptop, computer, pc">
+    </label>
+
+    <h3>Attributes</h3>
+    <p class="hint">Add at least one attribute. For select attributes, use comma-separated options.</p>
+
+    <div id="attribute-rows">
+      <fieldset class="attribute-row">
+        <legend>Attribute</legend>
+        <label>
+          Name
+          <input type="text" name="attr_name">
+        </label>
+        <label>
+          Type
+          <select name="attr_type">
+            <option value="">Choose type</option>
+            <option value="select">select</option>
+            <option value="text">text</option>
+            <option value="number">number</option>
+          </select>
+        </label>
+        <label>
+          Options (select only)
+          <input type="text" name="attr_options" placeholder="Nike, Adidas">
+        </label>
+      </fieldset>
+    </div>
+
+    <button type="button" class="button-secondary" id="add-attribute">Add attribute</button>
+    <button type="submit">Create department</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Existing departments</h2>
+  {% if departments %}
+    <ul class="department-list">
+      {% for department in departments %}
+      <li>
+        <strong>{{ department.name }}</strong>
+        {% if department.description %}
+          <p>{{ department.description }}</p>
+        {% endif %}
+        {% if department.search_terms %}
+          <p class="meta">Search terms: {{ department.search_terms | join(", ") }}</p>
+        {% endif %}
+        {% if department.department_attributes %}
+          <ul>
+            {% for attribute in department.department_attributes %}
+            <li>
+              {{ attribute.name }} ({{ attribute.attribute_type }})
+              {% if attribute.attribute_type == "select" and attribute.attribute_options %}
+                : {{ attribute.attribute_options | map(attribute="value") | join(", ") }}
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No departments yet.</p>
+  {% endif %}
+</section>
+
+<template id="attribute-row-template">
+  <fieldset class="attribute-row">
+    <legend>Attribute</legend>
+    <label>
+      Name
+      <input type="text" name="attr_name">
+    </label>
+    <label>
+      Type
+      <select name="attr_type">
+        <option value="">Choose type</option>
+        <option value="select">select</option>
+        <option value="text">text</option>
+        <option value="number">number</option>
+      </select>
+    </label>
+    <label>
+      Options (select only)
+      <input type="text" name="attr_options" placeholder="Nike, Adidas">
+    </label>
+  </fieldset>
+</template>
+
+<script src="{{ url_for('static', filename='site.js') }}"></script>
+{% endblock %}
