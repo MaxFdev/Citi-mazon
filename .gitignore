@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Node
+node_modules/
+
+# Supabase CLI (local link state; migrations are committed)
+supabase/.temp/
+supabase/.branches/
