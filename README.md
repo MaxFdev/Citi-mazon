@@ -33,6 +33,14 @@ npx supabase db push
 
 Migrations live in `supabase/migrations/`.
 
+## Seed data
+
+After schema is applied, load Citi themed demo data:
+
+```bash
+uv run python scripts/seed_data.py
+```
+
 ## Deploy
 
 Render: build `pip install -r requirements.txt`, start `gunicorn app:app --bind 0.0.0.0:$PORT`. Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Auto-deploy after CI passes on `main`.
