@@ -4,5 +4,75 @@
 
 {% block content %}
 <h1>Vendor</h1>
-<p>Item registration coming soon.</p>
+<p>Register an item in a department.</p>
+
+<section class="panel">
+  <h2>Choose department</h2>
+  <form method="get" action="{{ url_for('vendor.index') }}">
+    <label>
+      Department
+      <select name="department_id" onchange="this.form.submit()">
+        <option value="">Select a department</option>
+        {% for department in departments %}
+        <option value="{{ department.id }}" {% if department_id == department.id %}selected{% endif %}>
+          {{ department.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </label>
+  </form>
+</section>
+
+{% if selected_department %}
+<section class="panel">
+  <h2>New item in {{ selected_department.name }}</h2>
+  <form method="post" action="{{ url_for('vendor.register') }}">
+    <input type="hidden" name="department_id" value="{{ selected_department.id }}">
+
+    <label>
+      Vendor name
+      <input type="text" name="vendor_name" required>
+    </label>
+    <label>
+      Title
+      <input type="text" name="title" required>
+    </label>
+    <label>
+      Description
+      <textarea name="description" rows="3"></textarea>
+    </label>
+    <label>
+      Price
+      <input type="number" name="price" min="0" step="0.01" required>
+    </label>
+
+    {% if selected_department.department_attributes %}
+    <h3>Attributes</h3>
+    {% for attribute in selected_department.department_attributes %}
+    <label>
+      {{ attribute.name }}
+      {% if attribute.attribute_type == "select" %}
+      <select name="attr_{{ attribute.id }}" required>
+        <option value="">Choose {{ attribute.name }}</option>
+        {% for option in attribute.attribute_options %}
+        <option value="{{ option.id }}">{{ option.value }}</option>
+        {% endfor %}
+      </select>
+      {% elif attribute.attribute_type == "number" %}
+      <input type="number" name="attr_{{ attribute.id }}" step="any" required>
+      {% else %}
+      <input type="text" name="attr_{{ attribute.id }}" required>
+      {% endif %}
+    </label>
+    {% endfor %}
+    {% endif %}
+
+    <button type="submit">List item</button>
+  </form>
+</section>
+{% elif department_id %}
+<p class="hint">Department not found.</p>
+{% else %}
+<p class="hint">Pick a department to see its attribute fields.</p>
+{% endif %}
 {% endblock %}

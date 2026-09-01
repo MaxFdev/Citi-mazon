@@ -4,5 +4,119 @@
 
 {% block content %}
 <h1>Shop</h1>
-<p>Search and filters coming soon.</p>
+
+<form class="search-bar" method="get" action="{{ url_for('user.index') }}">
+  <label class="search-field">
+    Search
+    <input type="text" name="q" value="{{ result.query }}" placeholder="Search items">
+  </label>
+  <label class="search-field">
+    Department
+    <select name="department_id" onchange="this.form.submit()">
+      <option value="">All departments</option>
+      {% for department in all_departments %}
+      <option value="{{ department.id }}" {% if result.department_id == department.id %}selected{% endif %}>
+        {{ department.name }}
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+  <button type="submit">Search</button>
+</form>
+
+<div class="search-layout">
+  <aside class="filters panel">
+    <h2>Departments</h2>
+    {% if result.active_departments %}
+    <ul class="filter-list">
+      {% for department in result.active_departments %}
+      <li>
+        <a href="{{ search_url(q=result.query, department_id=department.id) }}"
+           {% if result.department_id == department.id %}class="active"{% endif %}>
+          {{ department.name }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="hint">No matching departments.</p>
+    {% endif %}
+
+    {% if result.department_id %}
+    {% for facet in result.select_facets %}
+    <h3>{{ facet.attribute_name }}</h3>
+    <ul class="filter-list">
+      {% for option in facet.options %}
+      <li>
+        <a href="{{ select_filter_url(facet.attribute_id, option.option_id) }}">
+          {{ option.label }} ({{ option.count }})
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endfor %}
+
+    {% for facet in result.number_facets %}
+    <h3>{{ facet.attribute_name }}</h3>
+    <form class="range-filter" method="get" action="{{ url_for('user.index') }}">
+      <input type="hidden" name="q" value="{{ result.query }}">
+      <input type="hidden" name="department_id" value="{{ result.department_id }}">
+      <label>
+        Min
+        <input type="number" name="filter_{{ facet.attribute_id }}_min"
+               value="{{ request.args.get('filter_' ~ facet.attribute_id ~ '_min', '') }}"
+               step="any"
+               {% if facet.min_value is not none %}placeholder="{{ facet.min_value }}"{% endif %}>
+      </label>
+      <label>
+        Max
+        <input type="number" name="filter_{{ facet.attribute_id }}_max"
+               value="{{ request.args.get('filter_' ~ facet.attribute_id ~ '_max', '') }}"
+               step="any"
+               {% if facet.max_value is not none %}placeholder="{{ facet.max_value }}"{% endif %}>
+      </label>
+      <button type="submit" class="button-secondary">Apply</button>
+    </form>
+    {% endfor %}
+    {% endif %}
+  </aside>
+
+  <section class="results">
+    {% if result.items %}
+    <ul class="item-list">
+      {% for item in result.items %}
+      <li class="item-card panel">
+        <h2>{{ item.title }}</h2>
+        <p class="meta">
+          {{ item.departments.name }} · {{ item.vendor_name }} · ${{ "%.2f"|format(item.price) }}
+        </p>
+        {% if item.description %}
+        <p>{{ item.description }}</p>
+        {% endif %}
+        {% if item.item_attributes %}
+        <ul class="item-attrs">
+          {% for row in item.item_attributes %}
+          <li>
+            {% if row.department_attributes %}
+              {{ row.department_attributes.name }}:
+            {% endif %}
+            {% if row.attribute_options %}
+              {{ row.attribute_options.value }}
+            {% elif row.value_text %}
+              {{ row.value_text }}
+            {% elif row.value_number is not none %}
+              {{ row.value_number }}
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="hint">No items found.</p>
+    {% endif %}
+  </section>
+</div>
 {% endblock %}
