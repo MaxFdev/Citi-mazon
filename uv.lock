@@ -138,6 +138,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "flask" },
+    { name = "httpx" },
     { name = "supabase" },
 ]
 
@@ -150,6 +151,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "flask" },
+    { name = "httpx" },
     { name = "supabase" },
 ]
 

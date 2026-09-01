@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "deploy": "uv run pywrangler deploy",
-    "dev": "uv run pywrangler dev",
-    "start": "uv run pywrangler dev"
+    "dev": "NPM_CONFIG_LOGLEVEL=error uv run pywrangler dev",
+    "deploy": "NPM_CONFIG_LOGLEVEL=error uv run pywrangler deploy",
+    "start": "NPM_CONFIG_LOGLEVEL=error uv run pywrangler dev"
   },
   "devDependencies": {
     "wrangler": "^4.127.1"
