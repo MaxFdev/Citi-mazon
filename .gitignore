@@ -223,3 +223,7 @@ node_modules/
 
 # Cloudflare Wrangler
 .wrangler/
+
+# Pywrangler / Cloudflare Python Workers
+python_modules/
+.venv-workers/
