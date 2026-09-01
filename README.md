@@ -16,6 +16,10 @@ Items are listed in departments and have a set of attributes. Every item has a p
 
 Searches are checked against item titles and descriptions and department names and search terms using PostgreSQL's ilike (string matching, case insensitive).
 
+Some example searches:
+- "office" shows an abiguous case that requires department clarification
+- "laptop" shows a single department search
+
 Some things that could have been done better:
 1. Transactions. There are definitely race conditions in the backend.
 2. Allow not required attributes. Just would have taken more time to integrate into the dynamic filter system.
