@@ -35,7 +35,7 @@
            {% if result.department_id == department.id %}class="active"{% endif %}>
           {{ department.name }}
         </a>
-        {% if result.department_id == department.id %}
+        {% if result.department_id == department.id and result.can_clear_department %}
         <a class="filter-clear" href="{{ remove_department_url() }}" title="Remove">×</a>
         {% endif %}
       </li>

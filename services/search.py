@@ -46,6 +46,7 @@ class SearchResult:
     price_facet: PriceFacet
     price_min: str | None = None
     price_max: str | None = None
+    can_clear_department: bool = False
 
 # actual search
 
@@ -102,6 +103,16 @@ def search(
         # no department picked yet, so no attribute filters
         select_facets, number_facets = [], []
 
+    can_clear_department = False
+    if department_id:
+        unscoped_items = _fetch_items(q, None, price_filter)
+        unscoped_dept_ids = {item["department_id"] for item in unscoped_items}
+        unscoped_item_matched = [
+            dept for dept in departments if dept["id"] in unscoped_dept_ids
+        ]
+        sidebar_departments = _merge_departments(term_matched, unscoped_item_matched)
+        can_clear_department = len(sidebar_departments) > 1
+
     # attach attributes onto each item for the results list
     for item in items:
         item["item_attributes"] = item_attrs_by_item.get(item["id"], [])
@@ -117,6 +128,7 @@ def search(
         price_facet=_build_price_facet(items),
         price_min=price_min,
         price_max=price_max,
+        can_clear_department=can_clear_department,
     )
 
 
