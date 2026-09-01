@@ -194,7 +194,7 @@ def _load_item_attributes(item_ids: list[str]) -> dict[str, list[dict]]:
     response = (
         get_supabase()
         .table("item_attributes")
-        .select("*, attribute_options(value)")
+        .select("*, department_attributes(name), attribute_options(value)")
         .in_("item_id", item_ids)
         .execute()
     )
