@@ -193,9 +193,17 @@ CITI_HOME = {
 }
 
 
+DEPARTMENT_SPECS = [CITI_MERCH, CITI_COMPUTERS, CITI_HOME]
+
+
 def seed_already_applied() -> bool:
     existing = {department["name"] for department in list_departments()}
     return DEPARTMENT_NAMES.issubset(existing)
+
+
+def missing_department_specs() -> list[dict]:
+    existing = {department["name"] for department in list_departments()}
+    return [spec for spec in DEPARTMENT_SPECS if spec["name"] not in existing]
 
 
 def _attribute_id(department: dict, attribute_name: str) -> str:
@@ -257,17 +265,18 @@ def _seed_department(department_spec: dict) -> dict:
 
 
 def seed() -> None:
-    if seed_already_applied():
+    to_seed = missing_department_specs()
+    if not to_seed:
         print("Seed data already present. Skipping.")
         return
 
-    merch = _seed_department(CITI_MERCH)
-    computers = _seed_department(CITI_COMPUTERS)
-    home = _seed_department(CITI_HOME)
+    existing = {spec["name"] for spec in DEPARTMENT_SPECS} - {spec["name"] for spec in to_seed}
+    for name in sorted(existing):
+        print(f"Skipping {name}; already present.")
 
-    print(f"Created {merch['name']} with {len(CITI_MERCH['items'])} items.")
-    print(f"Created {computers['name']} with {len(CITI_COMPUTERS['items'])} items.")
-    print(f"Created {home['name']} with {len(CITI_HOME['items'])} items.")
+    for spec in to_seed:
+        department = _seed_department(spec)
+        print(f"Created {department['name']} with {len(spec['items'])} items.")
 
 
 def main() -> None:
