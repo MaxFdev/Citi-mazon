@@ -1,24 +1,24 @@
 import os
 
-import httpx
 from dotenv import load_dotenv
 from flask import Flask, jsonify
+from postgrest.exceptions import APIError
+
+from db import get_supabase
 
 load_dotenv()
 
 app = Flask(__name__)
 
 
-def check_supabase_connection(url: str, key: str) -> None:
-    response = httpx.get(
-        f"{url.rstrip('/')}/auth/v1/settings",
-        headers={
-            "apikey": key,
-            "Authorization": f"Bearer {key}",
-        },
-        timeout=10.0,
-    )
-    response.raise_for_status()
+def check_supabase_connection() -> None:
+    try:
+        get_supabase().table("departments").select("id").limit(1).execute()
+    except APIError as exc:
+        # Schema not pushed yet — PostgREST is still reachable.
+        if exc.code == "PGRST205":
+            return
+        raise
 
 
 @app.get("/")
@@ -34,23 +34,23 @@ def health():
 @app.get("/health/supabase")
 def health_supabase():
     url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_PUBLISHABLE_KEY")
+    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 
     if not url or not key:
         return jsonify({
             "supabase": "error",
-            "detail": "Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY",
+            "detail": "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
         }), 500
 
     try:
-        check_supabase_connection(url, key)
+        check_supabase_connection()
         return jsonify({"supabase": "connected"})
-    except httpx.HTTPStatusError as exc:
+    except APIError as exc:
         return jsonify({
             "supabase": "error",
-            "detail": f"HTTP {exc.response.status_code}",
+            "detail": str(exc),
         }), 502
-    except httpx.HTTPError as exc:
+    except Exception as exc:
         return jsonify({
             "supabase": "error",
             "detail": str(exc),
